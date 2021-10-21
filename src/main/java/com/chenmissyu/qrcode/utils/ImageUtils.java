@@ -84,17 +84,38 @@ public class ImageUtils {
         try {
             //1、获取主图片
             BufferedImage big = ImageIO.read(new File(mainImgPath));
-            java.net.URL url = new URL("https://img-blog.csdn.net/20150906104118760");
+            int mainWidth = big.getWidth();
+            int mainHeight = big.getHeight();
+            System.out.println("主图片的宽 mainWidth = " + mainWidth + "--------二维码的高 mainHeight = " + mainHeight );
+
             //2、拿到二维码
             BufferedImage erweima = ImageIO.read(new File(qrcodePath));
-            int width = 709;
-            int height = 472;
+            int qrCodeWidth = erweima.getWidth();
+            int qrCodeHeight = erweima.getHeight();
+            System.out.println("二维码的宽 qrCodeWidth = " + qrCodeWidth + "--------二维码的高 qrCodeHeight = " + qrCodeHeight );
+            // 合成图片的宽
+            int width = mainWidth;
+            // 合成图片的高
+            int height = mainHeight;
             Image image = big.getScaledInstance(width, height, Image.SCALE_SMOOTH);
             BufferedImage bufferedImage2 = new BufferedImage(width, height, BufferedImage.TYPE_INT_BGR);
             //3、开始绘图
             Graphics2D g = bufferedImage2.createGraphics();
             g.drawImage(image, 0, 0, null);
-            g.drawImage(erweima, 84, 44, 300, 300, null);
+
+            // 二维码在x轴上向右浮动的像素长度
+            int floatX = 41 * 2;
+            // 二维码在y轴上向下浮动的像素长度
+            int floatY = 194 * 2;
+            // 二维码浮动后的图片的宽
+            int codeImgNewWidth = 294 * 2;
+            // 二维码浮动后的图片的高
+            int codeImgNewHeight = 269 * 2;
+            g.drawImage(erweima, floatX, floatY, codeImgNewWidth, codeImgNewHeight, null);
+
+            /**
+             * 添加文字 并设置文字的位置
+             */
             Font font = new Font("微软雅黑", Font.BOLD, 38);
             g.setFont(font);
             g.setPaint(Color.BLACK);
@@ -129,6 +150,22 @@ public class ImageUtils {
             width += metrics.charWidth(content.charAt(i));
         }
         return width;
+    }
+
+    public static void main(String[] args) {
+        try{
+            String link = "https://blog.csdn.net/chenmissyu";
+            // 二维码图片
+            String codeImgPath = "D:\\Test\\微信小程序\\test\\abc.png";
+            //主图片路径
+            String mainImgPath = "D:\\Test\\微信小程序\\test\\main.jpg";
+            //合成图片的路径
+            String ewmPath = "D:\\Test\\微信小程序\\test\\result.png";
+            String databasePath = "/upload/ewm/test.jpg";  //数据库保存路径
+            ImageUtils.CompoundImage( mainImgPath, codeImgPath, "101", ewmPath, databasePath );
+        }catch(Exception e){
+
+        }
     }
 
 }
